@@ -417,28 +417,17 @@ Reply with just the city name in lowercase, or NONE.`)
 async function isUnsupportedLocation(msg: string): Promise<string | null> {
   const r = await llm(`User said: "${msg}"
 
-SUPPORTED cities & countries (reply NONE for these):
-- Paris (France)
-- London (UK/England)
-- Rome (Italy)
-- Barcelona, Madrid (Spain)
-- Amsterdam (Netherlands)
-- Berlin (Germany)
-- Vienna (Austria)
-- Prague (Czech Republic)
-- Stockholm (Sweden)
-- Helsinki (Finland)
-- Copenhagen (Denmark)
-- Oslo (Norway)
-- Dublin (Ireland)
-- Lisbon (Portugal)
-- Zurich (Switzerland)
+SUPPORTED (reply NONE): Paris, London, Rome, Barcelona, Madrid, Amsterdam, Berlin, Vienna, Prague, Stockholm, Helsinki, Copenhagen, Oslo, Dublin, Lisbon, Zurich
+Also SUPPORTED: France, UK, England, Italy, Spain, Netherlands, Germany, Austria, Czech, Sweden, Finland, Denmark, Norway, Ireland, Portugal, Switzerland
 
-Is user asking for an UNSUPPORTED location?
-UNSUPPORTED: "tokyo"→Tokyo, "japan"→Japan, "new york"→New York
-SUPPORTED: "switzerland"→NONE, "swizerland"→NONE, "france"→NONE
+UNSUPPORTED examples:
+- "geneva"→Geneva (we only have Zurich in Switzerland)
+- "tokyo"→Tokyo
+- "new york"→New York
+- "milan"→Milan (we only have Rome in Italy)
 
-Reply with unsupported location name, or NONE if supported/unclear.`)
+Is user asking for an UNSUPPORTED city?
+Reply with the unsupported city name, or NONE if supported/country/unclear.`)
 
   if (!r || r.includes('NONE') || r.length > 20) return null
   return r.trim()
@@ -558,10 +547,12 @@ Reply RELATED or UNRELATED only.`)
       return { reply: "I'm a Michelin restaurant booking assistant - I can only help with restaurant reservations across Europe. Which city would you like to dine in?", booking }
     }
 
+    const cityOptions = 'Paris, London, Rome, Barcelona, Amsterdam, Berlin, Vienna, Prague, Stockholm, Helsinki, Copenhagen, Oslo, Dublin, Lisbon, Madrid, or Zurich'
     const reply = await llmChat(`You are a friendly Michelin restaurant booking assistant.
 User said: "${msg}"
-Respond naturally and briefly. Then ask which European city they'd like to dine in. Keep response to 1-2 sentences max.`)
-    return { reply: reply || "Which European city would you like to dine in?", booking }
+Respond naturally and briefly. Ask which city they'd like: ${cityOptions}.
+ONLY mention cities from this list. Keep response to 1-2 sentences.`)
+    return { reply: reply || `Which city would you like? We have ${cityOptions}.`, booking }
   }
 
   // RESTAURANT
