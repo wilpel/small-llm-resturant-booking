@@ -744,124 +744,124 @@ export default function Home() {
         <div className="about-section" style={{
           marginTop: 64,
           marginBottom: 48,
-          background: '#151515',
-          borderRadius: 16,
-          border: '1px solid #252525',
-          overflow: 'hidden'
+          textAlign: 'left'
         }}>
           {/* Header */}
           <div style={{
-            padding: '20px 24px',
-            borderBottom: '1px solid #252525',
+            marginBottom: 32,
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'baseline',
             justifyContent: 'space-between'
           }}>
-            <div style={{ fontWeight: 600, color: '#eee', fontSize: 15 }}>Why I Built This</div>
+            <h2 style={{ fontWeight: 600, color: '#fff', fontSize: 20, margin: 0 }}>About</h2>
             <div style={{ fontSize: 12, color: '#666' }}>
-              by William Peltomäki · CTO @ Playground
+              by William Peltomäki
             </div>
           </div>
 
-          {/* Content */}
-          <div style={{ padding: '24px' }}>
-            {/* Main text */}
-            <p style={{ color: '#999', fontSize: 14, lineHeight: 1.7, margin: '0 0 16px' }}>
-              You don't need expensive flagship models for every AI task. For structured workflows like booking, forms, and support,
-              <strong style={{ color: '#eee' }}> small models (1-8B parameters)</strong> work remarkably well when you decompose the problem into focused subtasks.
-            </p>
-            <p style={{ color: '#999', fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>
-              Each LLM call has one job: classify an intent, extract a date, or match a name. This is
-              <strong style={{ color: '#eee' }}> 50x cheaper</strong> than GPT-4o ($0.05 vs $2.50 per million tokens) and fast enough for real-time conversational UX.
-            </p>
-
-            {/* Flow diagram - Git-style branching */}
-            <div style={{
-              background: '#0d0d0d',
-              borderRadius: 10,
-              padding: '24px',
-              marginBottom: 20,
-              border: '1px solid #1a1a1a',
-              overflowX: 'auto'
-            }}>
-              <div style={{ fontSize: 11, color: '#555', marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Decomposed LLM Architecture
-              </div>
-
-              <svg width="900" height="180" style={{ display: 'block', margin: '0 auto' }}>
-                {/* Box 1: User Input */}
-                <rect x="0" y="40" width="160" height="60" rx="8" fill="#1f2937" stroke="#374151" strokeWidth="1" />
-                <text x="80" y="65" fill="#e5e7eb" fontSize="11" textAnchor="middle">I want the reservation</text>
-                <text x="80" y="80" fill="#e5e7eb" fontSize="11" textAnchor="middle">for 24th of December</text>
-
-                {/* Arrow 1 */}
-                <line x1="160" y1="70" x2="185" y2="70" stroke="#4ade80" strokeWidth="2" />
-                <polygon points="185,65 195,70 185,75" fill="#4ade80" />
-
-                {/* Box 2: Detect Intent */}
-                <rect x="200" y="20" width="130" height="140" rx="8" fill="#1f2937" stroke="#374151" strokeWidth="1" />
-                <rect x="200" y="20" width="130" height="28" rx="8" fill="#3b82f6" />
-                <rect x="200" y="40" width="130" height="8" fill="#3b82f6" />
-                <text x="265" y="40" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="600">Detect Intent</text>
-
-                {/* Intent list */}
-                <text x="215" y="68" fill="#6b7280" fontSize="10" fontFamily="monospace">SELECT_RESTAURANT</text>
-                <rect x="210" y="76" width="115" height="18" rx="3" fill="transparent" stroke="#4ade80" strokeWidth="1" />
-                <text x="215" y="89" fill="#4ade80" fontSize="10" fontFamily="monospace" fontWeight="600">PROVIDE_DATE</text>
-                <text x="215" y="108" fill="#6b7280" fontSize="10" fontFamily="monospace">PROVIDE_TIME</text>
-                <text x="215" y="124" fill="#6b7280" fontSize="10" fontFamily="monospace">PROVIDE_GUESTS</text>
-                <text x="215" y="140" fill="#6b7280" fontSize="10" fontFamily="monospace">CONFIRM</text>
-                <text x="215" y="156" fill="#6b7280" fontSize="10" fontFamily="monospace">OTHER</text>
-
-                {/* Arrow 2 */}
-                <line x1="330" y1="70" x2="355" y2="70" stroke="#4ade80" strokeWidth="2" />
-                <polygon points="355,65 365,70 355,75" fill="#4ade80" />
-
-                {/* Box 3: Extract Date */}
-                <rect x="370" y="30" width="130" height="80" rx="8" fill="#1f2937" stroke="#374151" strokeWidth="1" />
-                <rect x="370" y="30" width="130" height="28" rx="8" fill="#f59e0b" />
-                <rect x="370" y="50" width="130" height="8" fill="#f59e0b" />
-                <text x="435" y="50" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="600">Extract Date</text>
-                <text x="435" y="82" fill="#e5e7eb" fontSize="14" textAnchor="middle" fontFamily="monospace">2024-12-24</text>
-
-                {/* Arrow 3 */}
-                <line x1="500" y1="70" x2="525" y2="70" stroke="#4ade80" strokeWidth="2" />
-                <polygon points="525,65 535,70 525,75" fill="#4ade80" />
-
-                {/* Box 4: Update State */}
-                <rect x="540" y="30" width="140" height="80" rx="8" fill="#1f2937" stroke="#374151" strokeWidth="1" />
-                <rect x="540" y="30" width="140" height="28" rx="8" fill="#8b5cf6" />
-                <rect x="540" y="50" width="140" height="8" fill="#8b5cf6" />
-                <text x="610" y="50" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="600">Update State</text>
-                <text x="610" y="75" fill="#9ca3af" fontSize="10" textAnchor="middle" fontFamily="monospace">booking.date =</text>
-                <text x="610" y="90" fill="#e5e7eb" fontSize="11" textAnchor="middle" fontFamily="monospace">2024-12-24</text>
-
-                {/* Arrow 4 */}
-                <line x1="680" y1="70" x2="705" y2="70" stroke="#4ade80" strokeWidth="2" />
-                <polygon points="705,65 715,70 705,75" fill="#4ade80" />
-
-                {/* Box 5: Bot Reply */}
-                <rect x="720" y="30" width="170" height="80" rx="8" fill="#1f2937" stroke="#374151" strokeWidth="1" />
-                <rect x="720" y="30" width="170" height="28" rx="8" fill="#22c55e" />
-                <rect x="720" y="50" width="170" height="8" fill="#22c55e" />
-                <text x="805" y="50" fill="#fff" fontSize="12" textAnchor="middle" fontWeight="600">Bot Reply</text>
-                <text x="805" y="75" fill="#e5e7eb" fontSize="10" textAnchor="middle">Got it – December 24.</text>
-                <text x="805" y="90" fill="#e5e7eb" fontSize="10" textAnchor="middle">What time would you</text>
-                <text x="805" y="105" fill="#e5e7eb" fontSize="10" textAnchor="middle">like to dine?</text>
-              </svg>
+          {/* Two column layout */}
+          <div style={{ display: 'flex', gap: 48, marginBottom: 40 }}>
+            {/* Left column - Main concept */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ color: '#888', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 12px' }}>
+                The Idea
+              </h3>
+              <p style={{ color: '#999', fontSize: 14, lineHeight: 1.8, margin: 0 }}>
+                You don't need expensive flagship models for every AI task. For structured workflows like booking, forms, and support,
+                <strong style={{ color: '#ddd' }}> small models (1-8B parameters)</strong> work remarkably well when you decompose the problem into focused subtasks.
+              </p>
             </div>
 
-            {/* Stats */}
-            <div style={{
-              display: 'flex',
-              gap: 24,
-              fontSize: 13,
-              color: '#555'
-            }}>
-              <div><span style={{ color: '#aaa', fontWeight: 500 }}>~80</span> tokens/request</div>
-              <div><span style={{ color: '#aaa', fontWeight: 500 }}>$0.000004</span> per interaction</div>
-              <div><span style={{ color: '#aaa', fontWeight: 500 }}>50x</span> cheaper than GPT-4o</div>
+            {/* Right column - How it works */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ color: '#888', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 12px' }}>
+                How It Works
+              </h3>
+              <p style={{ color: '#999', fontSize: 14, lineHeight: 1.8, margin: 0 }}>
+                Each LLM call has one job: classify an intent, extract a date, or match a name. This is
+                <strong style={{ color: '#ddd' }}> 50x cheaper</strong> than GPT-4o and fast enough for real-time conversational UX.
+              </p>
             </div>
+          </div>
+
+          {/* Flow diagram */}
+          <div style={{
+            marginBottom: 32,
+            overflowX: 'auto'
+          }}>
+            <h3 style={{ color: '#888', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 20px' }}>
+              Architecture
+            </h3>
+
+            <svg width="900" height="160" style={{ display: 'block' }}>
+              {/* Box 1: User Input */}
+              <rect x="0" y="35" width="150" height="55" rx="6" fill="transparent" stroke="#333" strokeWidth="1" />
+              <text x="75" y="58" fill="#888" fontSize="11" textAnchor="middle">I want the reservation</text>
+              <text x="75" y="73" fill="#888" fontSize="11" textAnchor="middle">for 24th of December</text>
+
+              {/* Arrow 1 */}
+              <line x1="150" y1="62" x2="175" y2="62" stroke="#444" strokeWidth="1.5" />
+              <polygon points="175,58 183,62 175,66" fill="#444" />
+
+              {/* Box 2: Detect Intent */}
+              <rect x="188" y="10" width="125" height="130" rx="6" fill="transparent" stroke="#333" strokeWidth="1" />
+              <text x="250" y="30" fill="#aaa" fontSize="11" textAnchor="middle" fontWeight="500">Detect Intent</text>
+              <line x1="198" y1="38" x2="303" y2="38" stroke="#333" strokeWidth="1" />
+
+              {/* Intent list */}
+              <text x="203" y="56" fill="#555" fontSize="9" fontFamily="monospace">SELECT_RESTAURANT</text>
+              <text x="203" y="72" fill="#aaa" fontSize="9" fontFamily="monospace" fontWeight="500">PROVIDE_DATE</text>
+              <text x="203" y="88" fill="#555" fontSize="9" fontFamily="monospace">PROVIDE_TIME</text>
+              <text x="203" y="104" fill="#555" fontSize="9" fontFamily="monospace">PROVIDE_GUESTS</text>
+              <text x="203" y="120" fill="#555" fontSize="9" fontFamily="monospace">CONFIRM</text>
+              <text x="203" y="136" fill="#555" fontSize="9" fontFamily="monospace">OTHER</text>
+
+              {/* Arrow 2 */}
+              <line x1="313" y1="62" x2="338" y2="62" stroke="#444" strokeWidth="1.5" />
+              <polygon points="338,58 346,62 338,66" fill="#444" />
+
+              {/* Box 3: Extract Date */}
+              <rect x="351" y="25" width="120" height="75" rx="6" fill="transparent" stroke="#333" strokeWidth="1" />
+              <text x="411" y="45" fill="#aaa" fontSize="11" textAnchor="middle" fontWeight="500">Extract Date</text>
+              <line x1="361" y1="53" x2="461" y2="53" stroke="#333" strokeWidth="1" />
+              <text x="411" y="78" fill="#777" fontSize="13" textAnchor="middle" fontFamily="monospace">2024-12-24</text>
+
+              {/* Arrow 3 */}
+              <line x1="471" y1="62" x2="496" y2="62" stroke="#444" strokeWidth="1.5" />
+              <polygon points="496,58 504,62 496,66" fill="#444" />
+
+              {/* Box 4: Update State */}
+              <rect x="509" y="25" width="130" height="75" rx="6" fill="transparent" stroke="#333" strokeWidth="1" />
+              <text x="574" y="45" fill="#aaa" fontSize="11" textAnchor="middle" fontWeight="500">Update State</text>
+              <line x1="519" y1="53" x2="629" y2="53" stroke="#333" strokeWidth="1" />
+              <text x="574" y="72" fill="#555" fontSize="10" textAnchor="middle" fontFamily="monospace">booking.date =</text>
+              <text x="574" y="88" fill="#777" fontSize="11" textAnchor="middle" fontFamily="monospace">2024-12-24</text>
+
+              {/* Arrow 4 */}
+              <line x1="639" y1="62" x2="664" y2="62" stroke="#444" strokeWidth="1.5" />
+              <polygon points="664,58 672,62 664,66" fill="#444" />
+
+              {/* Box 5: Bot Reply */}
+              <rect x="677" y="25" width="160" height="75" rx="6" fill="transparent" stroke="#333" strokeWidth="1" />
+              <text x="757" y="45" fill="#aaa" fontSize="11" textAnchor="middle" fontWeight="500">Bot Reply</text>
+              <line x1="687" y1="53" x2="827" y2="53" stroke="#333" strokeWidth="1" />
+              <text x="757" y="72" fill="#777" fontSize="10" textAnchor="middle">Got it – December 24.</text>
+              <text x="757" y="88" fill="#777" fontSize="10" textAnchor="middle">What time would you like to dine?</text>
+            </svg>
+          </div>
+
+          {/* Stats */}
+          <div style={{
+            display: 'flex',
+            gap: 40,
+            fontSize: 13,
+            color: '#555',
+            borderTop: '1px solid #222',
+            paddingTop: 24
+          }}>
+            <div><span style={{ color: '#888', fontWeight: 500 }}>~80</span> tokens/request</div>
+            <div><span style={{ color: '#888', fontWeight: 500 }}>$0.000004</span> per interaction</div>
+            <div><span style={{ color: '#888', fontWeight: 500 }}>50x</span> cheaper than GPT-4o</div>
           </div>
         </div>
       </div>
