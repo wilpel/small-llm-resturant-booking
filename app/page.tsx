@@ -249,6 +249,14 @@ function Chat({ booking, onBookingUpdate, onConfirmed, onSendMessageReady }: {
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
+          onFocus={(e) => {
+            // On mobile, scroll input to just above keyboard
+            if (window.innerWidth <= 768) {
+              setTimeout(() => {
+                e.target.scrollIntoView({ behavior: 'smooth', block: 'end' })
+              }, 300)
+            }
+          }}
           placeholder="Type here..."
           style={{
             flex: 1,
