@@ -396,10 +396,12 @@ Which city is the user referring to? Available: ${cityList}
 
 Detect from:
 - City names (even misspelled): "prauge"→prague, "cophenhagen"→copenhagen
-- Landmarks: "eiffel tower"→paris, "colosseum"→rome, "big ben"→london, "sagrada familia"→barcelona
+- Landmark NAMES: "eiffel tower"→paris, "colosseum"→rome, "big ben"→london, "sagrada familia"→barcelona
+- Landmark DESCRIPTIONS: "large clock tower"→london (Big Ben), "tall iron tower"→paris (Eiffel), "leaning tower"→rome
 - Countries: "france"→paris, "italy"→rome
 - Context: "near the louvre"→paris, "by the vatican"→rome
 
+Think about what famous European landmarks match the description.
 If no city/landmark/country mentioned, reply NONE.
 Reply with just the city name in lowercase, or NONE.`)
 
@@ -525,9 +527,11 @@ async function handleChat(sessionId: string, msg: string): Promise<ChatResponse>
 
 Is this asking you to DO a task unrelated to restaurants/dining/travel?
 UNRELATED examples: "write code for me", "solve 2+2", "what's the weather", "translate this", "create an app"
-RELATED examples: "hey", "hello", "wazzup", "okay", "cool", "sure", "thanks", "nice", "what cities", "recommend something"
+RELATED examples: "hey", "hello", "okay", "cool", "recommend something", "near the tower", "by the clock", "somewhere nice", "good food", "I want something"
 
-Greetings and casual chat = RELATED
+Greetings = RELATED
+Locations/landmarks/places = RELATED
+Wanting something = RELATED
 Asking for non-restaurant tasks = UNRELATED
 
 Reply RELATED or UNRELATED only.`)
