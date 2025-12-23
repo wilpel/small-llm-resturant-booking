@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 
 // Mock hotel data
@@ -585,9 +585,26 @@ export default function Home() {
   })
   const [orderNumber, setOrderNumber] = useState<string | null>(null)
   const [sendMessage, setSendMessage] = useState<((text: string) => void) | null>(null)
+  const mapCardRef = useRef<HTMLDivElement>(null)
+  const prevBookingRef = useRef<Booking | null>(null)
 
   const cityData = booking.city ? CITIES[booking.city.toLowerCase()] : null
   const restaurants = booking.city ? RESTAURANTS[booking.city.toLowerCase()] || [] : []
+
+  // Scroll to map card on mobile when booking changes
+  useEffect(() => {
+    const prev = prevBookingRef.current
+    const isMobile = window.innerWidth <= 768
+
+    if (isMobile && mapCardRef.current && prev) {
+      // Scroll to map when city or restaurant changes
+      if (booking.city !== prev.city || booking.restaurant !== prev.restaurant || booking.confirmed !== prev.confirmed) {
+        mapCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+
+    prevBookingRef.current = { ...booking }
+  }, [booking])
 
   const handleRestaurantSelect = (restaurantName: string) => {
     if (sendMessage) {
@@ -616,7 +633,7 @@ export default function Home() {
 
         <div className="cards-container">
           {/* Left Card: Map, Booking Page, or Confirmation */}
-          <div className="card-left" style={{
+          <div ref={mapCardRef} className="card-left" style={{
             background: 'white',
             borderRadius: 16,
             boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
