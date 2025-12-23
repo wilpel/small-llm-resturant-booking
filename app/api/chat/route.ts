@@ -365,24 +365,8 @@ async function matchCity(msg: string): Promise<string | null> {
     if (msgLower.includes(city)) return city
   }
 
-  // Check for landmarks and country names
-  const locationMap: Record<string, string> = {
-    // Landmarks
-    'eiffel': 'paris', 'louvre': 'paris', 'champs': 'paris', 'montmartre': 'paris',
-    'colosseum': 'rome', 'vatican': 'rome', 'trevi': 'rome', 'pantheon': 'rome',
-    'big ben': 'london', 'buckingham': 'london', 'tower bridge': 'london', 'westminster': 'london',
-    'sagrada': 'barcelona', 'gaudi': 'barcelona', 'ramblas': 'barcelona',
-    'anne frank': 'amsterdam', 'rijksmuseum': 'amsterdam', 'van gogh': 'amsterdam',
-    'brandenburg': 'berlin', 'reichstag': 'berlin',
-    'schönbrunn': 'vienna', 'hofburg': 'vienna',
-    'charles bridge': 'prague', 'old town square': 'prague',
-    'royal palace': 'stockholm', 'gamla stan': 'stockholm',
-    'nyhavn': 'copenhagen', 'tivoli': 'copenhagen',
-    'opera house': 'oslo', 'vigeland': 'oslo',
-    'guinness': 'dublin', 'trinity college': 'dublin',
-    'belem': 'lisbon', 'alfama': 'lisbon',
-    'prado': 'madrid', 'retiro': 'madrid',
-    // Countries
+  // Quick check for common country names
+  const countryMap: Record<string, string> = {
     'france': 'paris', 'french': 'paris',
     'finland': 'helsinki', 'finnish': 'helsinki',
     'spain': 'madrid', 'spanish': 'madrid',
@@ -400,27 +384,29 @@ async function matchCity(msg: string): Promise<string | null> {
     'switzerland': 'zurich', 'swiss': 'zurich'
   }
 
-  for (const [term, city] of Object.entries(locationMap)) {
+  for (const [term, city] of Object.entries(countryMap)) {
     if (msgLower.includes(term)) return city
   }
 
-  // No direct match - only use LLM if message is short and looks like a location query
-  const words = msg.trim().split(/\s+/)
-  if (words.length > 5) return null  // Too long to be a city name
-
+  // Use LLM to detect cities from landmarks, misspellings, or context
   const cityList = CITIES.join(', ')
   const r = await llm(`User said: "${msg}"
 
-Is this a city or country name? Available: ${cityList}
-ONLY match if user is clearly naming a location.
-"paris"→paris, "france"→paris, "copenhagen"→copenhagen
-"hello"→NONE, "create app"→NONE, "book restaurant"→NONE
-Reply with city name in lowercase, or NONE if not a location.`)
+Which city is the user referring to? Available: ${cityList}
 
-  const rClean = r.toLowerCase().trim()
+Detect from:
+- City names (even misspelled): "prauge"→prague, "cophenhagen"→copenhagen
+- Landmarks: "eiffel tower"→paris, "colosseum"→rome, "big ben"→london, "sagrada familia"→barcelona
+- Countries: "france"→paris, "italy"→rome
+- Context: "near the louvre"→paris, "by the vatican"→rome
+
+If no city/landmark/country mentioned, reply NONE.
+Reply with just the city name in lowercase, or NONE.`)
+
+  const rClean = r.toLowerCase().trim().split(/[\s,.:!?]/)[0]
   if (rClean === 'none' || rClean.includes('none')) return null
   for (const city of CITIES) {
-    if (rClean === city) return city
+    if (rClean === city || rClean.includes(city)) return city
   }
   return null
 }
