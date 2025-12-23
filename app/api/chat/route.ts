@@ -518,22 +518,18 @@ async function handleChat(sessionId: string, msg: string): Promise<ChatResponse>
       return { reply: `Sorry, we don't have restaurants in ${unsupported} yet. We cover Paris, London, Rome, Barcelona, Amsterdam, Berlin, Vienna, Prague, Stockholm, Helsinki, Copenhagen, Oslo, Dublin, Lisbon, Madrid, and Zurich. Which city interests you?`, booking }
     }
 
-    // Check if user is asking for something unrelated
-    const isUnrelated = await llm(`User said: "${msg}"
+    // Check for explicit unrelated requests (code, math, etc)
+    const unrelatedKeywords = ['code', 'program', 'javascript', 'python', 'java', 'html', 'css', 'sql', 'algorithm', 'function', 'variable', 'weather', 'stock', 'crypto', 'bitcoin', 'calculate', 'math', 'equation']
+    const msgLower = msg.toLowerCase()
+    const isUnrelated = unrelatedKeywords.some(kw => msgLower.includes(kw))
 
-Is this about restaurant booking OR a greeting?
-YES: "book a table", "hello", "paris", "recommend a restaurant", "hi there"
-NO: "write code", "create an app", "help with javascript", "what's the weather"
-
-Reply YES or NO only.`)
-
-    if (isUnrelated.toLowerCase().includes('no')) {
-      return { reply: "I'm a Michelin restaurant booking assistant - I can only help you find and reserve tables at starred restaurants across Europe. Which city would you like to dine in?", booking }
+    if (isUnrelated) {
+      return { reply: "I'm a Michelin restaurant booking assistant - I can only help with restaurant reservations across Europe. Which city would you like to dine in?", booking }
     }
 
-    const reply = await llmChat(`You are a Michelin restaurant booking assistant. You ONLY help with restaurant reservations in Europe.
+    const reply = await llmChat(`You are a friendly Michelin restaurant booking assistant.
 User said: "${msg}"
-If greeting, be brief and friendly. Always ask which European city they'd like to dine in. Keep response under 2 sentences.`)
+Respond naturally and briefly. Then ask which European city they'd like to dine in. Keep response to 1-2 sentences max.`)
     return { reply: reply || "Which European city would you like to dine in?", booking }
   }
 
