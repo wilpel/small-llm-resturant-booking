@@ -396,12 +396,12 @@ Which city is the user referring to? Available: ${cityList}
 
 Detect from:
 - City names (even misspelled): "prauge"→prague, "cophenhagen"→copenhagen
-- Landmark NAMES: "eiffel tower"→paris, "colosseum"→rome, "big ben"→london, "sagrada familia"→barcelona
-- Landmark DESCRIPTIONS: "large clock tower"→london (Big Ben), "tall iron tower"→paris (Eiffel), "leaning tower"→rome
-- Countries: "france"→paris, "italy"→rome
+- Country names (even misspelled): "swizerland"→zurich, "switerland"→zurich, "itally"→rome, "frace"→paris
+- Landmark NAMES: "eiffel tower"→paris, "colosseum"→rome, "big ben"→london
+- Landmark DESCRIPTIONS: "large clock tower"→london (Big Ben), "tall iron tower"→paris (Eiffel)
 - Context: "near the louvre"→paris, "by the vatican"→rome
 
-Think about what famous European landmarks match the description.
+Think about what the user means, even with typos.
 If no city/landmark/country mentioned, reply NONE.
 Reply with just the city name in lowercase, or NONE.`)
 
