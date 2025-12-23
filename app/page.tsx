@@ -147,7 +147,9 @@ function Chat({ booking, onBookingUpdate, onConfirmed, onSendMessageReady }: {
   }, [messages])
 
   useEffect(() => {
-    if (!loading) {
+    // Only auto-focus on desktop, not mobile (prevents keyboard popup)
+    const isMobile = window.innerWidth <= 768
+    if (!loading && !isMobile) {
       inputRef.current?.focus()
     }
   }, [loading])

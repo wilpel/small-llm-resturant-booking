@@ -77,6 +77,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               flex: 1 !important;
               min-height: 0 !important;
               overflow: hidden !important;
+              display: flex !important;
+              flex-direction: column !important;
+            }
+            .card-right form {
+              position: sticky;
+              bottom: 0;
+              background: white;
             }
             .about-section {
               margin-top: 32px !important;
