@@ -343,6 +343,14 @@ Reply with ONE action name only.`)
 
 // Match restaurant by name
 async function whichRestaurant(msg: string, restaurants: RestaurantInfo[]): Promise<RestaurantInfo | null> {
+  const msgLower = msg.toLowerCase()
+
+  // Direct match first (case-insensitive)
+  for (const rest of restaurants) {
+    if (msgLower.includes(rest.name.toLowerCase())) return rest
+  }
+
+  // Use LLM as fallback for partial matches
   const names = restaurants.map(r => r.name).join(', ')
   const r = await llm(`User said: "${msg}"
 Restaurants: ${names}
@@ -350,8 +358,9 @@ Restaurants: ${names}
 Which restaurant is user referring to?
 Reply with the EXACT restaurant name from the list, or NONE.`)
 
+  const rLower = r.toLowerCase()
   for (const rest of restaurants) {
-    if (r.includes(rest.name)) return rest
+    if (rLower.includes(rest.name.toLowerCase())) return rest
   }
   return null
 }
