@@ -518,12 +518,19 @@ async function handleChat(sessionId: string, msg: string): Promise<ChatResponse>
       return { reply: `Sorry, we don't have restaurants in ${unsupported} yet. We cover Paris, London, Rome, Barcelona, Amsterdam, Berlin, Vienna, Prague, Stockholm, Helsinki, Copenhagen, Oslo, Dublin, Lisbon, Madrid, and Zurich. Which city interests you?`, booking }
     }
 
-    // Check for explicit unrelated requests (code, math, etc)
-    const unrelatedKeywords = ['code', 'program', 'javascript', 'python', 'java', 'html', 'css', 'sql', 'algorithm', 'function', 'variable', 'weather', 'stock', 'crypto', 'bitcoin', 'calculate', 'math', 'equation']
-    const msgLower = msg.toLowerCase()
-    const isUnrelated = unrelatedKeywords.some(kw => msgLower.includes(kw))
+    // Check if user is asking for help with something completely unrelated
+    const unrelatedCheck = await llm(`User: "${msg}"
 
-    if (isUnrelated) {
+Is this asking you to DO a task unrelated to restaurants/dining/travel?
+UNRELATED examples: "write code for me", "solve 2+2", "what's the weather", "translate this", "create an app"
+RELATED examples: "hey", "hello", "wazzup", "okay", "cool", "sure", "thanks", "nice", "what cities", "recommend something"
+
+Greetings and casual chat = RELATED
+Asking for non-restaurant tasks = UNRELATED
+
+Reply RELATED or UNRELATED only.`)
+
+    if (unrelatedCheck.toUpperCase().includes('UNRELATED')) {
       return { reply: "I'm a Michelin restaurant booking assistant - I can only help with restaurant reservations across Europe. Which city would you like to dine in?", booking }
     }
 
