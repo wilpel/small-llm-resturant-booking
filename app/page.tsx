@@ -779,7 +779,7 @@ export default function Home() {
               </h3>
               <p style={{ color: '#999', fontSize: 14, lineHeight: 1.8, margin: 0 }}>
                 Each LLM call has one job: classify an intent, extract a date, or match a name. This is
-                <strong style={{ color: '#ddd' }}> 50x cheaper</strong> than GPT-4o and fast enough for real-time conversational UX.
+                <strong style={{ color: '#ddd' }}> 100x cheaper</strong> than GPT-4o and fast enough for real-time conversational UX.
               </p>
             </div>
           </div>
@@ -861,7 +861,7 @@ export default function Home() {
           }}>
             <div><span style={{ color: '#888', fontWeight: 500 }}>~80</span> tokens/request</div>
             <div><span style={{ color: '#888', fontWeight: 500 }}>$0.000004</span> per interaction</div>
-            <div><span style={{ color: '#888', fontWeight: 500 }}>50x</span> cheaper than GPT-4o</div>
+            <div><span style={{ color: '#888', fontWeight: 500 }}>100x</span> cheaper than GPT-4o</div>
           </div>
         </div>
       </div>

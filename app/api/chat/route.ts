@@ -1,5 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Rate limiting
+const LIMITS = {
+  MAX_INPUT_WORDS: 150,
+  DAILY_TOKEN_LIMIT: 10_000_000,
+  ABSOLUTE_TOKEN_LIMIT: 100_000_000
+}
+
+// Global token tracking (persists across requests, resets on server restart)
+// For production, use Redis or a database
+const tokenUsage = {
+  daily: 0,
+  dailyResetDate: new Date().toDateString(),
+  total: 0
+}
+
+function checkAndUpdateTokens(estimatedTokens: number): { allowed: boolean; reason?: string } {
+  // Reset daily counter if new day
+  const today = new Date().toDateString()
+  if (tokenUsage.dailyResetDate !== today) {
+    tokenUsage.daily = 0
+    tokenUsage.dailyResetDate = today
+  }
+
+  // Check absolute limit
+  if (tokenUsage.total >= LIMITS.ABSOLUTE_TOKEN_LIMIT) {
+    return { allowed: false, reason: 'Service temporarily unavailable. Global token limit reached.' }
+  }
+
+  // Check daily limit
+  if (tokenUsage.daily >= LIMITS.DAILY_TOKEN_LIMIT) {
+    return { allowed: false, reason: 'Daily limit reached. Please try again tomorrow.' }
+  }
+
+  // Update counters
+  tokenUsage.daily += estimatedTokens
+  tokenUsage.total += estimatedTokens
+
+  return { allowed: true }
+}
+
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter(w => w.length > 0).length
+}
+
 // Booking state
 interface Booking {
   city: string | null
@@ -260,14 +304,17 @@ async function getRestaurantStepIntent(msg: string, restaurantNames: string, las
 Available restaurants: ${restaurantNames}
 
 What does the user want? Pick ONE action:
-- SELECT_RESTAURANT: wants to book a specific restaurant (mentions name, or says "book it", "yes", "first one")
-- ASK_ABOUT_RESTAURANT: asking about a specific restaurant ("tell me about Noma", "what's the cuisine at Septime?")
+- ASK_ABOUT_RESTAURANT: asking for info/details about a restaurant ("tell me about X", "tell me more about X", "what's X like?", "more info on X", "describe X")
+- SELECT_RESTAURANT: wants to BOOK a restaurant NOW ("book X", "reserve X", "I'll take X", "yes", "book it", "let's go with X")
 - CHANGE_CITY: mentions a different city/country
 - CANCEL: wants to cancel
-- OTHER: comparing restaurants, asking general questions ("which is best?", "recommend one", "cheapest?")
+- OTHER: comparing restaurants, general questions ("which is best?", "recommend one", "cheapest?")
 
-"which one is closest"=OTHER, "which is best"=OTHER.
-SELECT_RESTAURANT requires mentioning a restaurant NAME or clear selection.
+IMPORTANT:
+- "tell me more about X" = ASK_ABOUT_RESTAURANT (asking for info, NOT booking)
+- "tell me about X" = ASK_ABOUT_RESTAURANT
+- "book X" = SELECT_RESTAURANT (explicit booking)
+- "I want X" = SELECT_RESTAURANT
 Reply with ONE action name only.`)
   const valid: RestaurantStepIntent[] = ['SELECT_RESTAURANT', 'ASK_ABOUT_RESTAURANT', 'CHANGE_CITY', 'CANCEL', 'OTHER']
   for (const v of valid) {
@@ -311,18 +358,53 @@ Reply with the EXACT restaurant name from the list, or NONE.`)
 
 // Match city
 async function matchCity(msg: string): Promise<string | null> {
+  const msgLower = msg.toLowerCase()
+
+  // Direct match first - check if message contains a city name
+  for (const city of CITIES) {
+    if (msgLower.includes(city)) return city
+  }
+
+  // Check for country names
+  const countryMap: Record<string, string> = {
+    'france': 'paris', 'french': 'paris',
+    'finland': 'helsinki', 'finnish': 'helsinki',
+    'spain': 'madrid', 'spanish': 'madrid',
+    'italy': 'rome', 'italian': 'rome',
+    'uk': 'london', 'england': 'london', 'britain': 'london', 'british': 'london',
+    'germany': 'berlin', 'german': 'berlin',
+    'austria': 'vienna', 'austrian': 'vienna',
+    'czech': 'prague', 'czechia': 'prague',
+    'sweden': 'stockholm', 'swedish': 'stockholm',
+    'denmark': 'copenhagen', 'danish': 'copenhagen',
+    'norway': 'oslo', 'norwegian': 'oslo',
+    'ireland': 'dublin', 'irish': 'dublin',
+    'portugal': 'lisbon', 'portuguese': 'lisbon',
+    'netherlands': 'amsterdam', 'dutch': 'amsterdam', 'holland': 'amsterdam',
+    'switzerland': 'zurich', 'swiss': 'zurich'
+  }
+
+  for (const [country, city] of Object.entries(countryMap)) {
+    if (msgLower.includes(country)) return city
+  }
+
+  // No direct match - only use LLM if message is short and looks like a location query
+  const words = msg.trim().split(/\s+/)
+  if (words.length > 5) return null  // Too long to be a city name
+
   const cityList = CITIES.join(', ')
-  const r = await llm(`User message: "${msg}"
+  const r = await llm(`User said: "${msg}"
 
-Available cities: ${cityList}
-
-Is user asking about a city or country? Map countries:
-"france"→paris, "finland"→helsinki, "spain"→madrid, "italy"→rome, "uk"/"england"→london, "germany"→berlin, "austria"→vienna, "czech"→prague, "sweden"→stockholm, "denmark"→copenhagen, "norway"→oslo, "ireland"→dublin, "portugal"→lisbon, "netherlands"→amsterdam, "switzerland"→zurich.
-Reply with city name in lowercase, or NONE.`)
+Is this a city or country name? Available: ${cityList}
+ONLY match if user is clearly naming a location.
+"paris"→paris, "france"→paris, "copenhagen"→copenhagen
+"hello"→NONE, "create app"→NONE, "book restaurant"→NONE
+Reply with city name in lowercase, or NONE if not a location.`)
 
   const rClean = r.toLowerCase().trim()
+  if (rClean === 'none' || rClean.includes('none')) return null
   for (const city of CITIES) {
-    if (rClean === city || rClean.includes(city)) return city
+    if (rClean === city) return city
   }
   return null
 }
@@ -411,6 +493,13 @@ async function handleChat(sessionId: string, msg: string): Promise<ChatResponse>
 
   // CITY
   if (lastAsked === 'city') {
+    // Check for greetings first
+    const greetings = ['hi', 'hey', 'hello', 'hola', 'hej', 'howdy', 'yo', 'sup', 'greetings']
+    const msgLower = msg.toLowerCase().trim()
+    if (greetings.some(g => msgLower === g || msgLower.startsWith(g + ' ') || msgLower.startsWith(g + '!'))) {
+      return { reply: "Hey there! Ready to find you a great Michelin restaurant. Which European city would you like to dine in?", booking }
+    }
+
     const city = await matchCity(msg)
     if (city) {
       booking.city = city
@@ -429,9 +518,22 @@ async function handleChat(sessionId: string, msg: string): Promise<ChatResponse>
       return { reply: `Sorry, we don't have restaurants in ${unsupported} yet. We cover Paris, London, Rome, Barcelona, Amsterdam, Berlin, Vienna, Prague, Stockholm, Helsinki, Copenhagen, Oslo, Dublin, Lisbon, Madrid, and Zurich. Which city interests you?`, booking }
     }
 
-    const reply = await llmChat(`You are a Michelin restaurant booking assistant for European cities.
+    // Check if user is asking for something unrelated
+    const isUnrelated = await llm(`User said: "${msg}"
+
+Is this about restaurant booking OR a greeting?
+YES: "book a table", "hello", "paris", "recommend a restaurant", "hi there"
+NO: "write code", "create an app", "help with javascript", "what's the weather"
+
+Reply YES or NO only.`)
+
+    if (isUnrelated.toLowerCase().includes('no')) {
+      return { reply: "I'm a Michelin restaurant booking assistant - I can only help you find and reserve tables at starred restaurants across Europe. Which city would you like to dine in?", booking }
+    }
+
+    const reply = await llmChat(`You are a Michelin restaurant booking assistant. You ONLY help with restaurant reservations in Europe.
 User said: "${msg}"
-Respond briefly and ask which European city they'd like to dine in.`)
+If greeting, be brief and friendly. Always ask which European city they'd like to dine in. Keep response under 2 sentences.`)
     return { reply: reply || "Which European city would you like to dine in?", booking }
   }
 
@@ -747,8 +849,29 @@ function extractQuestion(reply: string): string | null {
 export async function POST(req: NextRequest) {
   const { message, sessionId } = await req.json()
   const sid = sessionId || 'default'
-  const session = getSession(sid)
 
+  // Check input word limit
+  const wordCount = countWords(message || '')
+  if (wordCount > LIMITS.MAX_INPUT_WORDS) {
+    return NextResponse.json({
+      reply: `Message too long (${wordCount} words). Please keep messages under ${LIMITS.MAX_INPUT_WORDS} words.`,
+      booking: getSession(sid).booking
+    })
+  }
+
+  // Estimate tokens for this request (~1.3 tokens per word + overhead for prompts)
+  const estimatedTokens = Math.ceil(wordCount * 1.3) + 200
+
+  // Check global limits
+  const limitCheck = checkAndUpdateTokens(estimatedTokens)
+  if (!limitCheck.allowed) {
+    return NextResponse.json({
+      reply: limitCheck.reason,
+      booking: getSession(sid).booking
+    })
+  }
+
+  const session = getSession(sid)
   const result = await handleChat(sid, message)
 
   if (sessions.has(sid)) {

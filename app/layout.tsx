@@ -52,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               height: 100%;
               display: flex;
               flex-direction: column;
+              padding-top: 8px !important;
             }
             .main-title {
               font-size: 18px;
