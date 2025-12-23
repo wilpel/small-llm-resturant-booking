@@ -416,12 +416,29 @@ Reply with just the city name in lowercase, or NONE.`)
 // Check for unsupported location
 async function isUnsupportedLocation(msg: string): Promise<string | null> {
   const r = await llm(`User said: "${msg}"
-Supported: Paris, London, Rome, Barcelona, Amsterdam, Berlin, Vienna, Prague, Stockholm, Helsinki, Copenhagen, Oslo, Dublin, Lisbon, Madrid, Zurich (and their countries)
 
-Is user asking for an UNSUPPORTED city/country?
-"tokyo"→Tokyo, "japan"→Japan, "new york"→New York
-SUPPORTED: "france"→NONE, "paris"→NONE
-Reply with unsupported location name or NONE.`)
+SUPPORTED cities & countries (reply NONE for these):
+- Paris (France)
+- London (UK/England)
+- Rome (Italy)
+- Barcelona, Madrid (Spain)
+- Amsterdam (Netherlands)
+- Berlin (Germany)
+- Vienna (Austria)
+- Prague (Czech Republic)
+- Stockholm (Sweden)
+- Helsinki (Finland)
+- Copenhagen (Denmark)
+- Oslo (Norway)
+- Dublin (Ireland)
+- Lisbon (Portugal)
+- Zurich (Switzerland)
+
+Is user asking for an UNSUPPORTED location?
+UNSUPPORTED: "tokyo"→Tokyo, "japan"→Japan, "new york"→New York
+SUPPORTED: "switzerland"→NONE, "swizerland"→NONE, "france"→NONE
+
+Reply with unsupported location name, or NONE if supported/unclear.`)
 
   if (!r || r.includes('NONE') || r.length > 20) return null
   return r.trim()
@@ -527,11 +544,12 @@ async function handleChat(sessionId: string, msg: string): Promise<ChatResponse>
 
 Is this asking you to DO a task unrelated to restaurants/dining/travel?
 UNRELATED examples: "write code for me", "solve 2+2", "what's the weather", "translate this", "create an app"
-RELATED examples: "hey", "hello", "okay", "cool", "recommend something", "near the tower", "by the clock", "somewhere nice", "good food", "I want something"
+RELATED examples: "hey", "hello", "can we do X", "i want X", "how about X", "switzerland", "swizerland", "paris", "near the tower"
 
 Greetings = RELATED
-Locations/landmarks/places = RELATED
-Wanting something = RELATED
+Locations/countries/cities/landmarks = RELATED
+"can we do [place]" = RELATED
+Wanting/asking about places = RELATED
 Asking for non-restaurant tasks = UNRELATED
 
 Reply RELATED or UNRELATED only.`)
