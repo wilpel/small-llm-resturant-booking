@@ -253,7 +253,7 @@ function Chat({ booking, onBookingUpdate, onConfirmed, onSendMessageReady }: {
             padding: '10px 14px',
             borderRadius: 20,
             border: '1px solid #ddd',
-            fontSize: 14,
+            fontSize: 16,
             outline: 'none'
           }}
           disabled={loading}
