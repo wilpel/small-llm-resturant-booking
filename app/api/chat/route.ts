@@ -607,20 +607,17 @@ Answer the question about THIS restaurant. Be concise. Ask if they'd like to boo
       }
     }
 
-    if (intent === 'OTHER') {
-      const details = restaurants.map(r => `${r.name}: ${'★'.repeat(r.stars)}, €${r.price}, ${r.cuisine} - ${r.description}`).join('\n')
-      const answer = await llmChat(`You are a Michelin restaurant booking assistant.
+    // For OTHER intent or any fallthrough, use LLM to respond naturally
+    const details = restaurants.map(r => `${r.name}: ${'★'.repeat(r.stars)}, €${r.price}, ${r.cuisine} - ${r.description}`).join('\n')
+    const answer = await llmChat(`You are a Michelin restaurant booking assistant.
 City: ${booking.city}
 Available restaurants:
 ${details}
 
-User asked: "${msg}"
+User said: "${msg}"
 
-Answer their question using the restaurant info above. Then ask which they'd like to book.`)
-      return { reply: answer, booking }
-    }
-
-    return { reply: "Which restaurant would you like? Click a card or tell me the name.", booking }
+Answer their question or respond naturally using the restaurant info above. Be helpful. Then ask which restaurant they'd like to book.`)
+    return { reply: answer, booking }
   }
 
   // DATE
@@ -667,15 +664,12 @@ Answer their question using the restaurant info above. Then ask which they'd lik
       }
     }
 
-    if (intent === 'OTHER') {
-      const answer = await llmChat(`You are a Michelin restaurant booking assistant.
+    // For OTHER or fallthrough, use LLM
+    const answer = await llmChat(`You are a Michelin restaurant booking assistant.
 Current: ${booking.restaurant} in ${booking.city}.
-User asked: "${msg}"
-Answer briefly, then ask for the date.`)
-      return { reply: answer, booking }
-    }
-
-    return { reply: "What date would you like to dine? (e.g., 'Dec 30', 'January 5')", booking }
+User said: "${msg}"
+Answer naturally, then ask for the date they'd like to dine.`)
+    return { reply: answer, booking }
   }
 
   // TIME
@@ -702,15 +696,12 @@ Answer briefly, then ask for the date.`)
       }
     }
 
-    if (intent === 'OTHER') {
-      const answer = await llmChat(`You are a Michelin restaurant booking assistant.
+    // For OTHER or fallthrough, use LLM
+    const answer = await llmChat(`You are a Michelin restaurant booking assistant.
 Current: ${booking.restaurant} on ${booking.date}.
-User asked: "${msg}"
-Answer briefly, then ask what time they'd like to dine.`)
-      return { reply: answer, booking }
-    }
-
-    return { reply: "What time would you like to dine? (e.g., 7pm, 8:30pm)", booking }
+User said: "${msg}"
+Answer naturally, then ask what time they'd like to dine.`)
+    return { reply: answer, booking }
   }
 
   // GUESTS
@@ -756,18 +747,12 @@ Answer briefly, then ask what time they'd like to dine.`)
       }
     }
 
-    if (intent === 'OTHER') {
-      const answer = await llmChat(`You are a Michelin restaurant booking assistant.
+    // For OTHER or fallthrough, use LLM
+    const answer = await llmChat(`You are a Michelin restaurant booking assistant.
 Current: ${booking.restaurant}, ${booking.date} at ${booking.time}.
-User asked: "${msg}"
-Answer briefly, then ask how many guests (up to 10).`)
-      return { reply: answer, booking }
-    }
-
-    if (booking.guests > 0) {
-      return { reply: `And it was for ${booking.guests} guest${booking.guests > 1 ? 's' : ''}, right?`, booking }
-    }
-    return { reply: "How many guests will be dining?", booking }
+User said: "${msg}"
+Answer naturally, then ask how many guests will be dining (up to 10).`)
+    return { reply: answer, booking }
   }
 
   // CONFIRM
@@ -823,18 +808,15 @@ What to change? RESTAURANT, DATE, TIME, GUESTS, or OTHER?`)
       return { reply: "What would you like to change - restaurant, date, time, or number of guests?", booking }
     }
 
-    if (intent === 'OTHER') {
-      const restaurants = RESTAURANTS[booking.city!] || []
-      const rest = restaurants.find(r => r.name === booking.restaurant)
-      const answer = await llmChat(`You are a Michelin restaurant booking assistant.
+    // For OTHER or fallthrough, use LLM
+    const restaurants = RESTAURANTS[booking.city!] || []
+    const rest = restaurants.find(r => r.name === booking.restaurant)
+    const answer = await llmChat(`You are a Michelin restaurant booking assistant.
 Reservation: ${booking.restaurant}, ${booking.date} at ${booking.time}, ${booking.guests} guests.
 Price: €${rest?.price}/person.
-User asked: "${msg}"
-Answer briefly, then ask if they'd like to confirm.`)
-      return { reply: answer, booking }
-    }
-
-    return { reply: "Would you like me to confirm this reservation? Say yes to confirm or no to cancel.", booking }
+User said: "${msg}"
+Answer naturally, then ask if they'd like to confirm the reservation.`)
+    return { reply: answer, booking }
   }
 
   return { reply: "Welcome! Which European city would you like to dine in?", booking }
