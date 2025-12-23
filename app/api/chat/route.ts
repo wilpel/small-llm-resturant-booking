@@ -365,8 +365,24 @@ async function matchCity(msg: string): Promise<string | null> {
     if (msgLower.includes(city)) return city
   }
 
-  // Check for country names
-  const countryMap: Record<string, string> = {
+  // Check for landmarks and country names
+  const locationMap: Record<string, string> = {
+    // Landmarks
+    'eiffel': 'paris', 'louvre': 'paris', 'champs': 'paris', 'montmartre': 'paris',
+    'colosseum': 'rome', 'vatican': 'rome', 'trevi': 'rome', 'pantheon': 'rome',
+    'big ben': 'london', 'buckingham': 'london', 'tower bridge': 'london', 'westminster': 'london',
+    'sagrada': 'barcelona', 'gaudi': 'barcelona', 'ramblas': 'barcelona',
+    'anne frank': 'amsterdam', 'rijksmuseum': 'amsterdam', 'van gogh': 'amsterdam',
+    'brandenburg': 'berlin', 'reichstag': 'berlin',
+    'schönbrunn': 'vienna', 'hofburg': 'vienna',
+    'charles bridge': 'prague', 'old town square': 'prague',
+    'royal palace': 'stockholm', 'gamla stan': 'stockholm',
+    'nyhavn': 'copenhagen', 'tivoli': 'copenhagen',
+    'opera house': 'oslo', 'vigeland': 'oslo',
+    'guinness': 'dublin', 'trinity college': 'dublin',
+    'belem': 'lisbon', 'alfama': 'lisbon',
+    'prado': 'madrid', 'retiro': 'madrid',
+    // Countries
     'france': 'paris', 'french': 'paris',
     'finland': 'helsinki', 'finnish': 'helsinki',
     'spain': 'madrid', 'spanish': 'madrid',
@@ -384,8 +400,8 @@ async function matchCity(msg: string): Promise<string | null> {
     'switzerland': 'zurich', 'swiss': 'zurich'
   }
 
-  for (const [country, city] of Object.entries(countryMap)) {
-    if (msgLower.includes(country)) return city
+  for (const [term, city] of Object.entries(locationMap)) {
+    if (msgLower.includes(term)) return city
   }
 
   // No direct match - only use LLM if message is short and looks like a location query
