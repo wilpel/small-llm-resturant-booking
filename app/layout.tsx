@@ -38,18 +38,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
           @media (max-width: 768px) {
             html, body {
-              height: 100dvh;
-              max-height: 100dvh;
+              min-height: 100dvh;
             }
             .main-container {
-              height: 100dvh;
-              max-height: 100dvh;
-              min-height: auto;
+              min-height: 100dvh;
               padding: 16px;
-              overflow: hidden;
+              overflow-y: auto;
             }
             .inner-container {
-              height: 100%;
               display: flex;
               flex-direction: column;
               padding-top: 8px !important;
@@ -65,22 +61,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             .cards-container {
               flex-direction: column;
               gap: 12px;
-              flex: 1;
-              min-height: 0;
-              overflow: hidden;
             }
             .card-left {
-              flex: 1;
-              height: auto;
-              min-height: 0;
+              height: 280px;
+              min-height: 280px;
+              flex: none !important;
             }
             .card-right {
-              flex: 1;
-              height: auto;
-              min-height: 0;
-              overflow: hidden;
+              height: 320px;
+              min-height: 320px;
+              max-height: 320px;
+              flex: none !important;
+            }
+            .card-right > div:last-child {
+              flex: 1 !important;
+              min-height: 0 !important;
+              overflow: hidden !important;
             }
             .about-section {
+              margin-top: 32px !important;
+              margin-bottom: 24px !important;
+            }
+            .about-section > div:first-child {
+              flex-direction: column !important;
+              gap: 8px !important;
+            }
+            .about-section svg {
               display: none;
             }
           }
