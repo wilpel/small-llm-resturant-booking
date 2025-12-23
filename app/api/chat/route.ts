@@ -365,23 +365,23 @@ async function matchCity(msg: string): Promise<string | null> {
     if (msgLower.includes(city)) return city
   }
 
-  // Quick check for common country names
+  // Quick check for common country names and misspellings
   const countryMap: Record<string, string> = {
-    'france': 'paris', 'french': 'paris',
+    'france': 'paris', 'french': 'paris', 'frace': 'paris', 'frnace': 'paris',
     'finland': 'helsinki', 'finnish': 'helsinki',
-    'spain': 'madrid', 'spanish': 'madrid',
-    'italy': 'rome', 'italian': 'rome',
-    'uk': 'london', 'england': 'london', 'britain': 'london', 'british': 'london',
-    'germany': 'berlin', 'german': 'berlin',
+    'spain': 'madrid', 'spanish': 'madrid', 'spian': 'madrid',
+    'italy': 'rome', 'italian': 'rome', 'itally': 'rome', 'itlay': 'rome',
+    'uk': 'london', 'england': 'london', 'britain': 'london', 'british': 'london', 'englnd': 'london',
+    'germany': 'berlin', 'german': 'berlin', 'germny': 'berlin',
     'austria': 'vienna', 'austrian': 'vienna',
-    'czech': 'prague', 'czechia': 'prague',
+    'czech': 'prague', 'czechia': 'prague', 'prauge': 'prague', 'pragu': 'prague',
     'sweden': 'stockholm', 'swedish': 'stockholm',
-    'denmark': 'copenhagen', 'danish': 'copenhagen',
+    'denmark': 'copenhagen', 'danish': 'copenhagen', 'cophenhagen': 'copenhagen', 'copenhagn': 'copenhagen',
     'norway': 'oslo', 'norwegian': 'oslo',
     'ireland': 'dublin', 'irish': 'dublin',
     'portugal': 'lisbon', 'portuguese': 'lisbon',
     'netherlands': 'amsterdam', 'dutch': 'amsterdam', 'holland': 'amsterdam',
-    'switzerland': 'zurich', 'swiss': 'zurich'
+    'switzerland': 'zurich', 'swiss': 'zurich', 'swizerland': 'zurich', 'switerland': 'zurich', 'switzerlan': 'zurich', 'switzerlnd': 'zurich'
   }
 
   for (const [term, city] of Object.entries(countryMap)) {
