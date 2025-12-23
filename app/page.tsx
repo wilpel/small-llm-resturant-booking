@@ -611,7 +611,7 @@ export default function Home() {
           Small Model (1B) Restaurant Agent
         </h1>
         <p className="main-subtitle" style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 24, fontSize: 14, marginTop: 0 }}>
-          Michelin Restaurant Reservations · Powered by Llama 3.2
+          Michelin Restaurant Reservations · Powered by Llama 3.2 1B
         </p>
 
         <div className="cards-container">

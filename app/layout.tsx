@@ -68,9 +68,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               flex: none !important;
             }
             .card-right {
-              height: 320px;
-              min-height: 320px;
-              max-height: 320px;
+              height: 400px;
+              min-height: 400px;
+              max-height: 400px;
               flex: none !important;
             }
             .card-right > div:last-child {
